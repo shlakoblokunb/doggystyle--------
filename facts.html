@@ -1,199 +1,21 @@
 <!DOCTYPE html>
 <html lang="ru">
-
 <head>
-
-    <!-- Кодировка -->
-    <meta charset="UTF-8">
-
-    <!-- Адаптивность -->
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
-    <!-- Заголовок -->
-    <title>Интересные факты | Бультерьер</title>
-
-    <!-- Шрифты -->
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-
-    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600;700;800&display=swap"
-        rel="stylesheet">
-
-    <!-- CSS -->
-    <link rel="stylesheet" href="css/style.css">
-    <link rel="stylesheet" href="css/base.css">
-
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="description" content="Интересные факты и небольшая викторина о породе бультерьер." />
+  <meta name="keywords" content="интересные факты о бультерьерах, викторина бультерьер, факты бультерьер, особенности породы" />
+  <title>Интересные факты | Бультерьер</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600;700;800&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="css/1.css" />
 </head>
-
 <body>
-
-    <!-- Шапка -->
-
-    <header class="header">
-
-        <div class="logo">
-            BullLover
-        </div>
-
-        <nav class="nav" id="nav">
-
-            <a href="index.html">Главная</a>
-            <a href="about.html">О породе</a>
-            <a href="care.html">Уход</a>
-            <a href="gallery.html">Галерея</a>
-            <a href="facts.html">Факты</a>
-            <a href="contacts.html">Контакты</a>
-
-        </nav>
-
-        <button class="burger" id="burger">
-            ☰
-        </button>
-
-    </header>
-
-    <!-- Баннер -->
-
-    <section class="page-hero">
-
-        <div class="container">
-
-            <h1>
-
-                Интересные факты
-
-            </h1>
-
-            <p>
-
-                Необычные особенности одной из самых узнаваемых пород собак
-
-            </p>
-
-        </div>
-
-    </section>
-
-    <!-- Генератор фактов -->
-
-    <section>
-
-        <div class="container">
-
-            <div class="section-title">
-
-                <h2>Случайный факт</h2>
-
-            </div>
-
-            <div class="fact-generator">
-
-                <button
-                    class="btn"
-                    id="factBtn">
-
-                    Показать факт
-
-                </button>
-
-                <div id="factText">
-
-                    Нажмите кнопку, чтобы узнать что-то новое
-
-                </div>
-
-            </div>
-
-        </div>
-
-    </section>
-
-    <!-- Рекорды -->
-
-    <section>
-
-        <div class="container">
-
-            <div class="section-title">
-
-                <h2>Интересные особенности породы</h2>
-
-            </div>
-
-                    <h3>🐾 Узнаваемый профиль</h3>
-
-                    <p>
-                        Яйцевидная форма головы делает породу
-                        одной из самых узнаваемых в мире
-                    </p>
-                    <br>
-        
-
-                    <h3>🐾 Высокий интеллект</h3>
-
-                    <p>
-                        Бультерьеры быстро усваивают новые команды, несмоторя на своё упрямство
-                    </p>
-                    <br>
-
-                    <h3>🐾 Сильная привязанность</h3>
-                   
-                    <p>
-                        Очень ориентированы на человека, любят находиться рядом с 
-                        семьёй и не выносят одиночества
-                    </p>
-
-                    <br>
-                    <h3>🐾 Энергичность</h3>
-
-                    <p>
-                        Разнесут половину дома, если ненароком заскучают. Любят крутиться волчком под дабстеп
-                    </p>
-                    <br>
-
-                </div>
-
-            </div>
-
-        </div>
-
-    </section>
-
-    <section class="quiz">
-
-    <div class="quiz-box">
-
-        <h2>Небольшая викторина</h2>
-
-        <div id="quizQuestion" class="quiz-question"></div>
-
-        <div id="quizButtons" class="quiz-buttons"></div>
-
-        <div id="factQuizResult"></div>
-
-    </div>
-
-</section>
-
-<footer>
-    <div class="footer-content">
-        <h3>BullLover</h3>
-        <p>Информационный сайт о породе бультерьер</p>
-        <p>© 2026</p>
-    </div>
-</footer>
-
-    <button id="topBtn">
-
-        ↑
-
-    </button>
-
-    <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
-
-    <script type="module" src="js/facts.js"></script>
-
+  <div id="root"></div>
+  <script crossorigin src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+  <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+  <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+  <script type="text/babel" data-presets="react" src="src/main.jsx"></script>
 </body>
-
 </html>

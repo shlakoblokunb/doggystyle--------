@@ -1,13 +1,13 @@
 const { useEffect, useMemo, useState } = React;
 
 const pages = [
-  { id: 'home', label: 'Главная', href: 'index.html' },
-  { id: 'about', label: 'О породе', href: 'about.html' },
-  { id: 'care', label: 'Уход', href: 'care.html' },
-  { id: 'gallery', label: 'Галерея', href: 'gallery.html' },
-  { id: 'facts', label: 'Факты', href: 'facts.html' },
-  { id: 'contacts', label: 'Контакты', href: 'contacts.html' },
-];
+  ['home', 'Главная', 'index.html'],
+  ['about', 'О породе', 'about.html'],
+  ['care', 'Уход', 'care.html'],
+  ['gallery', 'Галерея', 'gallery.html'],
+  ['facts', 'Факты', 'facts.html'],
+  ['contacts', 'Контакты', 'contacts.html'],
+].map(([id, label, href]) => ({ id, label, href }));
 
 const metadata = {
   home: {
@@ -42,23 +42,84 @@ const metadata = {
   },
 };
 
+const homeQuiz = [
+  ['Готовы к активным прогулкам каждый день?', [['Да', 2], ['Нет', 0]]],
+  ['У вас есть опыт воспитания собак?', [['Да', 1], ['Нет', 0]]],
+  ['Готовы уделять много времени воспитанию?', [['Да', 2], ['Нет', 0]]],
+];
+
+const factsQuiz = [
+  ['В какой стране была выведена порода бультерьер?', [['Германия', false], ['Англия', true], ['Франция', false]]],
+  ['Какой главный признак породы?', [['Яйцевидная голова', true], ['Длинные уши', false], ['Кудрявая шерсть', false]]],
+  ['Бультерьер — это в первую очередь:', [['Охотничья собака', false], ['Служебная собака', false], ['Собака-компаньон', true]]],
+];
+
+const galleryData = [
+  ['gallery1.jpg', 'puppy', 'Щенок'],
+  ['gallery2.jpg', 'puppy', 'Щенок'],
+  ['gallery3.jpg', 'puppy', 'Щенок'],
+  ['gallery13.jpg', 'puppy', 'Щенок'],
+  ['gallery4.jpg', 'adult', 'Взрослый'],
+  ['gallery5.jpg', 'adult', 'Взрослый'],
+  ['gallery6.jpg', 'adult', 'Взрослый'],
+  ['gallery10.jpg', 'adult', 'Взрослый'],
+  ['gallery11.jpg', 'adult', 'Взрослый'],
+  ['gallery7.jpg', 'play', 'Игра'],
+  ['gallery8.jpg', 'play', 'Игра'],
+  ['gallery9.jpg', 'play', 'Игра'],
+  ['gallery12.jpg', 'play', 'Игра'],
+].map(([file, category, alt]) => ({ src: `images/${file}`, category, alt }));
+
+const careRows = [
+  ['Страна происхождения', 'Англия'],
+  ['Группа FCI', 'Терьеры'],
+  ['Рост', '30–45 см'],
+  ['Вес', '20–35 кг'],
+  ['Продолжительность жизни', '12–14 лет'],
+  ['Шерсть', 'Короткая, гладкая'],
+  ['Темперамент', 'Энергичный, преданный, смелый'],
+  ['Назначение', 'Компаньон'],
+];
+
+function getPageFromPath(pathname) {
+  const file = pathname.split('/').pop() || 'index.html';
+  return file === 'index.html' || file === '' ? 'home' : file.replace('.html', '');
+}
 
 function setMetaTag(name, content) {
   let tag = document.querySelector(`meta[name="${name}"]`);
 
   if (!tag) {
     tag = document.createElement('meta');
-    tag.setAttribute('name', name);
+    tag.name = name;
     document.head.appendChild(tag);
   }
 
-  tag.setAttribute('content', content);
+  tag.content = content;
+}
+
+function useCurrentPage() {
+  const [page, setPage] = useState(() => getPageFromPath(window.location.pathname));
+
+  useEffect(() => {
+    const syncPage = () => setPage(getPageFromPath(window.location.pathname));
+    window.addEventListener('popstate', syncPage);
+    return () => window.removeEventListener('popstate', syncPage);
+  }, []);
+
+  const navigate = (event, href) => {
+    event.preventDefault();
+    window.history.pushState({}, '', href);
+    setPage(getPageFromPath(href));
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  };
+
+  return [page, navigate];
 }
 
 function useScrollReveal(page) {
   useEffect(() => {
-    const elements = document.querySelectorAll('.reveal');
-
+    const elements = [...document.querySelectorAll('.reveal')];
     if (!elements.length) return undefined;
 
     if (!('IntersectionObserver' in window)) {
@@ -68,42 +129,15 @@ function useScrollReveal(page) {
 
     const observer = new IntersectionObserver((entries) => {
       entries.forEach((entry) => {
-        if (entry.isIntersecting) {
-          entry.target.classList.add('active');
-          observer.unobserve(entry.target);
-        }
+        if (!entry.isIntersecting) return;
+        entry.target.classList.add('active');
+        observer.unobserve(entry.target);
       });
     }, { threshold: 0.18 });
 
     elements.forEach((element) => observer.observe(element));
-
     return () => observer.disconnect();
   }, [page]);
-}
-
-function pageFromPath(pathname) {
-  const file = pathname.split('/').pop() || 'index.html';
-  if (file === 'index.html' || file === '') return 'home';
-  return file.replace('.html', '') || 'home';
-}
-
-function useCurrentPage() {
-  const [page, setPage] = useState(() => pageFromPath(window.location.pathname));
-
-  useEffect(() => {
-    const onPopState = () => setPage(pageFromPath(window.location.pathname));
-    window.addEventListener('popstate', onPopState);
-    return () => window.removeEventListener('popstate', onPopState);
-  }, []);
-
-  const navigate = (event, href) => {
-    event.preventDefault();
-    window.history.pushState({}, '', href);
-    setPage(pageFromPath(href));
-    window.scrollTo({ top: 0, behavior: 'smooth' });
-  };
-
-  return [page, navigate];
 }
 
 function Header({ navigate }) {
@@ -119,9 +153,7 @@ function Header({ navigate }) {
           </a>
         ))}
       </nav>
-      <button className="burger" id="burger" aria-label="Открыть меню" onClick={() => setOpen((value) => !value)}>
-        ☰
-      </button>
+      <button className="burger" id="burger" aria-label="Открыть меню" onClick={() => setOpen((value) => !value)}>☰</button>
     </header>
   );
 }
@@ -142,10 +174,10 @@ function TopButton() {
   const [visible, setVisible] = useState(false);
 
   useEffect(() => {
-    const handleScroll = () => setVisible(window.scrollY > 500);
-    handleScroll();
-    window.addEventListener('scroll', handleScroll);
-    return () => window.removeEventListener('scroll', handleScroll);
+    const onScroll = () => setVisible(window.scrollY > 500);
+    onScroll();
+    window.addEventListener('scroll', onScroll);
+    return () => window.removeEventListener('scroll', onScroll);
   }, []);
 
   return (
@@ -175,23 +207,70 @@ function SectionTitle({ title, text }) {
   );
 }
 
+function Cards({ items, className = 'cards' }) {
+  return (
+    <div className={className}>
+      {items.map((item) => (
+        <article className="card reveal" key={item.title}>
+          {item.icon && <div className="pink-square">{item.icon}</div>}
+          <h3>{item.title}</h3>
+          <p>{item.text}</p>
+        </article>
+      ))}
+    </div>
+  );
+}
+
+function Quiz({ title, questions, scoreToResult, finalResult }) {
+  const [step, setStep] = useState(0);
+  const [score, setScore] = useState(0);
+  const [done, setDone] = useState(false);
+  const current = questions[step];
+
+  const answer = (value) => {
+    const nextScore = score + (typeof value === 'number' ? value : value ? 1 : 0);
+    setScore(nextScore);
+
+    if (step + 1 < questions.length) setStep((index) => index + 1);
+    else setDone(true);
+  };
+
+  const restart = () => {
+    setStep(0);
+    setScore(0);
+    setDone(false);
+  };
+
+  return (
+    <div className="quiz-box">
+      <h2 className={title === 'Подходит ли вам бультерьер?' ? 'quiz-title' : ''}>{title}</h2>
+      {!done ? (
+        <>
+          <div className="quiz-question">{current[0]}</div>
+          <div className="quiz-buttons">
+            {current[1].map(([label, value]) => <button className="btn" key={label} onClick={() => answer(value)}>{label}</button>)}
+          </div>
+        </>
+      ) : (
+        <>
+          <div className="quiz-result-card">{finalResult ? finalResult(score, questions.length) : scoreToResult(score)}</div>
+          {!finalResult && <button className="btn quiz-restart" onClick={restart}>Пройти заново</button>}
+        </>
+      )}
+    </div>
+  );
+}
+
 function HomePage({ navigate }) {
-  const [countersStarted, setCountersStarted] = useState(false);
   const [counterValues, setCounterValues] = useState([0, 0, 0]);
-  const quizData = useMemo(() => [
-    { q: 'Готовы к активным прогулкам каждый день?', a: [{ text: 'Да', score: 2 }, { text: 'Нет', score: 0 }] },
-    { q: 'У вас есть опыт воспитания собак?', a: [{ text: 'Да', score: 1 }, { text: 'Нет', score: 0 }] },
-    { q: 'Готовы уделять много времени воспитанию?', a: [{ text: 'Да', score: 2 }, { text: 'Нет', score: 0 }] },
-  ], []);
-  const [quizStep, setQuizStep] = useState(0);
-  const [quizScore, setQuizScore] = useState(0);
-  const [finished, setFinished] = useState(false);
+  const [started, setStarted] = useState(false);
 
   useEffect(() => {
-    const stats = document.querySelector('.stats');
     const startCounters = () => {
-      if (countersStarted || !stats || stats.getBoundingClientRect().top >= window.innerHeight - 100) return;
-      setCountersStarted(true);
+      const stats = document.querySelector('.stats');
+      if (started || !stats || stats.getBoundingClientRect().top >= window.innerHeight - 100) return;
+
+      setStarted(true);
       const targets = [14, 35, 100];
       let frame = 0;
       const animate = () => {
@@ -205,20 +284,7 @@ function HomePage({ navigate }) {
     startCounters();
     window.addEventListener('scroll', startCounters);
     return () => window.removeEventListener('scroll', startCounters);
-  }, [countersStarted]);
-
-  const answerQuiz = (score) => {
-    const nextScore = quizScore + score;
-    setQuizScore(nextScore);
-    if (quizStep + 1 < quizData.length) setQuizStep((step) => step + 1);
-    else setFinished(true);
-  };
-
-  const restartQuiz = () => {
-    setQuizStep(0);
-    setQuizScore(0);
-    setFinished(false);
-  };
+  }, [started]);
 
   return (
     <>
@@ -235,21 +301,17 @@ function HomePage({ navigate }) {
       <section>
         <div className="container">
           <SectionTitle title="Почему именно бультерьер?" />
-          <div className="cards">
-            <article className="card reveal"><div className="pink-square">❤</div><h3>Преданность</h3><p>Сильная привязанность к семье</p></article>
-            <article className="card reveal"><div className="pink-square">⚡</div><h3>Активность</h3><p>Любит движение и игры</p></article>
-            <article className="card reveal"><div className="pink-square">🧠</div><h3>Интеллект</h3><p>Быстро обучается</p></article>
-          </div>
+          <Cards items={[
+            { icon: '❤', title: 'Преданность', text: 'Сильная привязанность к семье' },
+            { icon: '⚡', title: 'Активность', text: 'Любит движение и игры' },
+            { icon: '🧠', title: 'Интеллект', text: 'Быстро обучается' },
+          ]} />
         </div>
       </section>
 
       <section className="stats">
-        {[
-          ['лет жизни', counterValues[0]],
-          ['кг веса', counterValues[1]],
-          ['% любви к хозяину', counterValues[2]],
-        ].map(([label, value]) => (
-          <div className="stat" key={label}><h3 className="counter">{value}</h3><p>{label}</p></div>
+        {['лет жизни', 'кг веса', '% любви к хозяину'].map((label, index) => (
+          <div className="stat" key={label}><h3 className="counter">{counterValues[index]}</h3><p>{label}</p></div>
         ))}
       </section>
 
@@ -261,22 +323,7 @@ function HomePage({ navigate }) {
       </section>
 
       <section className="reveal">
-        <div className="quiz-box">
-          <h2 className="quiz-title">Подходит ли вам бультерьер?</h2>
-          {!finished ? (
-            <>
-              <div className="quiz-question">{quizData[quizStep].q}</div>
-              <div className="quiz-buttons">
-                {quizData[quizStep].a.map((answer) => <button className="btn" key={answer.text} onClick={() => answerQuiz(answer.score)}>{answer.text}</button>)}
-              </div>
-            </>
-          ) : (
-            <>
-              <div className="quiz-result-card">{quizScore >= 4 ? 'Кажется, бультерьер вам подходит!' : 'Стоит рассмотреть более спокойные породы'}</div>
-              <button className="btn quiz-restart" onClick={restartQuiz}>Пройти заново</button>
-            </>
-          )}
-        </div>
+        <Quiz title="Подходит ли вам бультерьер?" questions={homeQuiz} scoreToResult={(score) => (score >= 4 ? 'Кажется, бультерьер вам подходит!' : 'Стоит рассмотреть более спокойные породы')} />
       </section>
     </>
   );
@@ -301,20 +348,22 @@ function AboutPage() {
       <section className="about-features">
         <div className="container">
           <SectionTitle title="Основные особенности" />
-          <div className="cards">
-            <article className="card reveal"><h3>Уникальная внешность</h3><p>Яйцевидная форма головы считается визитной карточкой породы</p></article>
-            <article className="card reveal"><h3>Высокий интеллект</h3><p>Бультерьеры хорошо обучаются и быстро осваивают новые команды</p></article>
-            <article className="card reveal"><h3>Активность</h3><p>Порода нуждается в регулярных прогулках и физических нагрузках</p></article>
-          </div>
+          <Cards items={[
+            { title: 'Уникальная внешность', text: 'Яйцевидная форма головы считается визитной карточкой породы' },
+            { title: 'Высокий интеллект', text: 'Бультерьеры хорошо обучаются и быстро осваивают новые команды' },
+            { title: 'Активность', text: 'Порода нуждается в регулярных прогулках и физических нагрузках' },
+          ]} />
         </div>
       </section>
       <section className="timeline-section">
         <div className="container">
           <SectionTitle title="Развитие породы" />
           <div className="timeline">
-            <div className="timeline-item reveal"><span>1850-е</span><h3>Начало селекции</h3><p>Первые эксперименты по созданию новой породы</p></div>
-            <div className="timeline-item reveal"><span>1860-е</span><h3>Первые выставки</h3><p>Бультерьер получает узнаваемость и популярность</p></div>
-            <div className="timeline-item reveal"><span>XX век</span><h3>Семейный компаньон</h3><p>Порода становится преданной собакой для активных владельцев</p></div>
+            {[
+              ['1850-е', 'Начало селекции', 'Первые эксперименты по созданию новой породы'],
+              ['1860-е', 'Первые выставки', 'Бультерьер получает узнаваемость и популярность'],
+              ['XX век', 'Семейный компаньон', 'Порода становится преданной собакой для активных владельцев'],
+            ].map(([year, title, text]) => <div className="timeline-item reveal" key={year}><span>{year}</span><h3>{title}</h3><p>{text}</p></div>)}
           </div>
         </div>
       </section>
@@ -325,48 +374,90 @@ function AboutPage() {
 function CarePage() {
   const [age, setAge] = useState('');
   const [result, setResult] = useState('');
-  const rows = [['Страна происхождения', 'Англия'], ['Группа FCI', 'Терьеры'], ['Рост', '30–45 см'], ['Вес', '20–35 кг'], ['Продолжительность жизни', '12–14 лет'], ['Шерсть', 'Короткая, гладкая'], ['Темперамент', 'Энергичный, преданный, смелый'], ['Назначение', 'Компаньон']];
+
   const calculateAge = () => {
-    const numericAge = Number(age);
-    if (!age && numericAge !== 0) { setResult('Возраст собаки'); return; }
-    const humanAge = numericAge <= 2 ? numericAge * 12 : 24 + (numericAge - 2) * 4;
-    setResult(`Примерный человеческий возраст: ${humanAge} лет`);
+    const dogAge = Number(age);
+    if (!age && dogAge !== 0) {
+      setResult('Возраст собаки');
+      return;
+    }
+
+    setResult(`Примерный человеческий возраст: ${dogAge <= 2 ? dogAge * 12 : 24 + (dogAge - 2) * 4} лет`);
   };
 
   return (
     <>
       <PageHero title="Уход и содержание" text="Основные рекомендации по воспитанию и ежедневному уходу за бультерьером" />
-      <section className="care-table-section"><div className="container"><SectionTitle title="Основные характеристики" /><div className="care-table-card reveal">{rows.map(([name, value]) => <div className="care-row" key={name}><span>{name}</span><span>{value}</span></div>)}</div></div></section>
-      <section><div className="container"><SectionTitle title="Что важно помнить" /><div className="care-cards">
-        <div className="care-card reveal"><h3>Движение</h3><p>Со бультерьером нужно гулять 2–3 раза в день примерно по 1 часу. Нельзя забывать про баланс между физическими и умственными нагрузками.</p></div>
-        <div className="care-card reveal"><h3>Воспитание</h3><p>Главная задача — стать лидером для собаки, проявить последовательность, твердость и уважение. Важно направить упрямство и охотничий инстинкт буля в мирное русло.</p></div>
-        <div className="care-card reveal"><h3>Гигиена</h3><p>Достаточно протирать лапы после прогулки, мыть собаку 1–2 раза в год, чистить уши еженедельно, стричь когти раз в месяц и проверять глаза. А ещё проверять, чтобы буль не грустил!</p></div>
-      </div></div></section>
-      <section className="age-section reveal"><div className="age-calculator"><h2>Калькулятор возраста</h2><div className="age-input-group"><input type="number" value={age} onChange={(event) => setAge(event.target.value)} placeholder="Возраст собаки" /><button className="btn" onClick={calculateAge}>Рассчитать</button></div><div className="age-result">{result}</div></div></section>
+      <section className="care-table-section">
+        <div className="container">
+          <SectionTitle title="Основные характеристики" />
+          <div className="care-table-card reveal">
+            {careRows.map(([name, value]) => <div className="care-row" key={name}><span>{name}</span><span>{value}</span></div>)}
+          </div>
+        </div>
+      </section>
+      <section>
+        <div className="container">
+          <SectionTitle title="Что важно помнить" />
+          <div className="care-cards">
+            {[
+              ['Движение', 'Со бультерьером нужно гулять 2–3 раза в день примерно по 1 часу. Нельзя забывать про баланс между физическими и умственными нагрузками.'],
+              ['Воспитание', 'Главная задача — стать лидером для собаки, проявить последовательность, твердость и уважение. Важно направить упрямство и охотничий инстинкт буля в мирное русло.'],
+              ['Гигиена', 'Достаточно протирать лапы после прогулки, мыть собаку 1–2 раза в год, чистить уши еженедельно, стричь когти раз в месяц и проверять глаза. А ещё проверять, чтобы буль не грустил!'],
+            ].map(([title, text]) => <div className="care-card reveal" key={title}><h3>{title}</h3><p>{text}</p></div>)}
+          </div>
+        </div>
+      </section>
+      <section className="age-section reveal">
+        <div className="age-calculator">
+          <h2>Калькулятор возраста</h2>
+          <div className="age-input-group">
+            <input type="number" value={age} onChange={(event) => setAge(event.target.value)} placeholder="Возраст собаки" />
+            <button className="btn" onClick={calculateAge}>Рассчитать</button>
+          </div>
+          <div className="age-result">{result}</div>
+        </div>
+      </section>
     </>
   );
 }
 
-const galleryData = [
-  { src: 'images/gallery1.jpg', category: 'puppy', alt: 'Щенок' }, { src: 'images/gallery2.jpg', category: 'puppy', alt: 'Щенок' }, { src: 'images/gallery3.jpg', category: 'puppy', alt: 'Щенок' }, { src: 'images/gallery13.jpg', category: 'puppy', alt: 'Щенок' },
-  { src: 'images/gallery4.jpg', category: 'adult', alt: 'Взрослый' }, { src: 'images/gallery5.jpg', category: 'adult', alt: 'Взрослый' }, { src: 'images/gallery6.jpg', category: 'adult', alt: 'Взрослый' }, { src: 'images/gallery10.jpg', category: 'adult', alt: 'Взрослый' }, { src: 'images/gallery11.jpg', category: 'adult', alt: 'Взрослый' },
-  { src: 'images/gallery7.jpg', category: 'play', alt: 'Игра' }, { src: 'images/gallery8.jpg', category: 'play', alt: 'Игра' }, { src: 'images/gallery9.jpg', category: 'play', alt: 'Игра' }, { src: 'images/gallery12.jpg', category: 'play', alt: 'Игра' },
-];
-
 function GalleryPage() {
   const [filter, setFilter] = useState('all');
   const [index, setIndex] = useState(0);
-  const currentGallery = filter === 'all' ? galleryData : galleryData.filter((item) => item.category === filter);
-  const getPrev = (i) => (i - 1 + currentGallery.length) % currentGallery.length;
-  const getNext = (i) => (i + 1) % currentGallery.length;
-  const items = [{ pos: 'left', data: currentGallery[getPrev(index)] }, { pos: 'center', data: currentGallery[index] }, { pos: 'right', data: currentGallery[getNext(index)] }];
+  const photos = useMemo(() => (filter === 'all' ? galleryData : galleryData.filter((item) => item.category === filter)), [filter]);
+  const shift = (direction) => setIndex((value) => (value + direction + photos.length) % photos.length);
   const chooseFilter = (value) => { setFilter(value); setIndex(0); };
+  const visiblePhotos = [
+    ['left', photos[(index - 1 + photos.length) % photos.length]],
+    ['center', photos[index]],
+    ['right', photos[(index + 1) % photos.length]],
+  ];
 
   return (
     <>
       <PageHero title="Галерея" text="Взгляните на эти смешные мордочки своими глазами" />
-      <section><div className="container gallery-filters">{[['all', 'Все'], ['puppy', 'Щенки'], ['adult', 'Взрослые'], ['play', 'Играющие']].map(([value, label]) => <button className={`filter-btn${filter === value ? ' active' : ''}`} key={value} onClick={() => chooseFilter(value)}>{label}</button>)}</div></section>
-      <section><div className="container"><div className="gallery-carousel reveal"><button className="gallery-arrow gallery-prev" aria-label="Предыдущее фото" onClick={() => setIndex(getPrev(index))}>❮</button><div className="gallery-circle">{items.map((item) => <div className={`gallery-item ${item.pos}`} key={`${item.pos}-${item.data.src}`}><img src={item.data.src} alt={item.data.alt} /></div>)}</div><button className="gallery-arrow gallery-next" aria-label="Следующее фото" onClick={() => setIndex(getNext(index))}>❯</button></div></div></section>
+      <section>
+        <div className="container gallery-filters">
+          {[
+            ['all', 'Все'],
+            ['puppy', 'Щенки'],
+            ['adult', 'Взрослые'],
+            ['play', 'Играющие'],
+          ].map(([value, label]) => <button className={`filter-btn${filter === value ? ' active' : ''}`} key={value} onClick={() => chooseFilter(value)}>{label}</button>)}
+        </div>
+      </section>
+      <section>
+        <div className="container">
+          <div className="gallery-carousel reveal">
+            <button className="gallery-arrow gallery-prev" aria-label="Предыдущее фото" onClick={() => shift(-1)}>❮</button>
+            <div className="gallery-circle">
+              {visiblePhotos.map(([position, photo]) => <div className={`gallery-item ${position}`} key={`${position}-${photo.src}`}><img src={photo.src} alt={photo.alt} /></div>)}
+            </div>
+            <button className="gallery-arrow gallery-next" aria-label="Следующее фото" onClick={() => shift(1)}>❯</button>
+          </div>
+        </div>
+      </section>
     </>
   );
 }
@@ -375,33 +466,49 @@ function FactsPage() {
   const facts = ['Порода выведена в Англии в XIX веке', 'Були известны яйцеобразной формой головы', 'Отличается высоким интеллектом и упрямством', 'Буль очень привязан к хозяину', 'Були нуждаются в регулярной активности', 'Буль — отличный друг при правильном воспитании', 'Любит крутиться на месте', 'Були уже давно не собаки-убийцы'];
   const [fact, setFact] = useState('Нажмите кнопку, чтобы узнать что-то новое');
   const [factActive, setFactActive] = useState(false);
-  const quizData = [
-    { q: 'В какой стране была выведена порода бультерьер?', a: [{ text: 'Германия', correct: false }, { text: 'Англия', correct: true }, { text: 'Франция', correct: false }] },
-    { q: 'Какой главный признак породы?', a: [{ text: 'Яйцевидная голова', correct: true }, { text: 'Длинные уши', correct: false }, { text: 'Кудрявая шерсть', correct: false }] },
-    { q: 'Бультерьер — это в первую очередь:', a: [{ text: 'Охотничья собака', correct: false }, { text: 'Служебная собака', correct: false }, { text: 'Собака-компаньон', correct: true }] },
-  ];
-  const [step, setStep] = useState(0);
-  const [score, setScore] = useState(0);
-  const [done, setDone] = useState(false);
-  const showFact = () => { setFact(facts[Math.floor(Math.random() * facts.length)]); setFactActive(true); };
-  const answer = (correct) => {
-    const nextScore = correct ? score + 1 : score;
-    setScore(nextScore);
-    if (step + 1 < quizData.length) setStep((value) => value + 1);
-    else setDone(true);
+  const showFact = () => {
+    setFact(facts[Math.floor(Math.random() * facts.length)]);
+    setFactActive(true);
   };
 
   return (
     <>
       <PageHero title="Интересные факты" text="Необычные особенности одной из самых узнаваемых пород собак" />
-      <section><div className="container"><SectionTitle title="Случайный факт" /><div className="fact-generator reveal"><button className="btn" onClick={showFact}>Показать факт</button><div className={factActive ? 'fact-text fact-card-active' : 'fact-text'}>{fact}</div></div></div></section>
-      <section><div className="container"><SectionTitle title="Интересные особенности породы" /><div className="facts-list">
-        <h3>🐾 Узнаваемый профиль</h3><p>Яйцевидная форма головы делает породу одной из самых узнаваемых в мире</p>
-        <h3>🐾 Высокий интеллект</h3><p>Бультерьеры быстро усваивают новые команды, несмоторя на своё упрямство</p>
-        <h3>🐾 Сильная привязанность</h3><p>Очень ориентированы на человека, любят находиться рядом с семьёй и не выносят одиночества</p>
-        <h3>🐾 Энергичность</h3><p>Разнесут половину дома, если ненароком заскучают. Любят крутиться волчком под дабстеп</p>
-      </div></div></section>
-      <section className="quiz"><div className="quiz-box"><h2>Небольшая викторина</h2>{!done ? <><div className="quiz-question">{quizData[step].q}</div><div className="quiz-buttons">{quizData[step].a.map((item) => <button className="btn" key={item.text} onClick={() => answer(item.correct)}>{item.text}</button>)}</div></> : <div className="quiz-result-card"><h3>Ваш результат</h3><p>{score === quizData.length ? 'Идеально! Вы отлично знаете породу 🐾' : score >= 2 ? 'Хороший результат! Вы неплохо разбираетесь в породе' : 'Есть время узнать побольше о бультерьерах!'}</p><p>Правильных ответов: {score} / {quizData.length}</p></div>}</div></section>
+      <section>
+        <div className="container">
+          <SectionTitle title="Случайный факт" />
+          <div className="fact-generator reveal">
+            <button className="btn" onClick={showFact}>Показать факт</button>
+            <div className={factActive ? 'fact-text fact-card-active' : 'fact-text'}>{fact}</div>
+          </div>
+        </div>
+      </section>
+      <section>
+        <div className="container">
+          <SectionTitle title="Интересные особенности породы" />
+          <div className="facts-list">
+            {[
+              ['🐾 Узнаваемый профиль', 'Яйцевидная форма головы делает породу одной из самых узнаваемых в мире'],
+              ['🐾 Высокий интеллект', 'Бультерьеры быстро усваивают новые команды, несмоторя на своё упрямство'],
+              ['🐾 Сильная привязанность', 'Очень ориентированы на человека, любят находиться рядом с семьёй и не выносят одиночества'],
+              ['🐾 Энергичность', 'Разнесут половину дома, если ненароком заскучают. Любят крутиться волчком под дабстеп'],
+            ].map(([title, text]) => <React.Fragment key={title}><h3>{title}</h3><p>{text}</p></React.Fragment>)}
+          </div>
+        </div>
+      </section>
+      <section className="quiz">
+        <Quiz
+          title="Небольшая викторина"
+          questions={factsQuiz}
+          finalResult={(score, total) => (
+            <>
+              <h3>Ваш результат</h3>
+              <p>{score === total ? 'Идеально! Вы отлично знаете породу 🐾' : score >= 2 ? 'Хороший результат! Вы неплохо разбираетесь в породе' : 'Есть время узнать побольше о бультерьерах!'}</p>
+              <p>Правильных ответов: {score} / {total}</p>
+            </>
+          )}
+        />
+      </section>
     </>
   );
 }
@@ -410,15 +517,41 @@ function ContactsPage() {
   return (
     <>
       <PageHero title="Контакты" text="Позвоните, если захочется поболтать о бультерьерах" />
-      <section><div className="container"><SectionTitle title="Контактная информация" /><div className="contacts-grid reveal"><div className="contact-card"><h3>Email</h3><p><a href="mailto:lesikpost@gmail.com">lesikpost@gmail.com</a></p></div><div className="contact-card"><h3>Телефон</h3><p>+7 (922) 259-90-52</p></div><div className="contact-card"><h3>Город</h3><p>Санкт-Петербург</p></div></div></div></section>
-      <section><div className="container"><SectionTitle title="Автор проекта" /><div className="author-card reveal"><div className="author-photo"><img src="images/author.jpg" alt="Автор проекта" /></div><div className="author-info"><h3>Фролова Алёна Алексеевна</h3><br /><p>Студент группы 4326</p><p>Курсовая работа по дисциплине «Web-технологии»</p><p>Тема проекта: «Бультерьер: всё о собаке»</p><p>ГУАП</p></div></div></div></section>
+      <section>
+        <div className="container">
+          <SectionTitle title="Контактная информация" />
+          <div className="contacts-grid reveal">
+            <div className="contact-card"><h3>Email</h3><p><a href="mailto:lesikpost@gmail.com">lesikpost@gmail.com</a></p></div>
+            <div className="contact-card"><h3>Телефон</h3><p>+7 (922) 259-90-52</p></div>
+            <div className="contact-card"><h3>Город</h3><p>Санкт-Петербург</p></div>
+          </div>
+        </div>
+      </section>
+      <section>
+        <div className="container">
+          <SectionTitle title="Автор проекта" />
+          <div className="author-card reveal">
+            <div className="author-photo"><img src="images/author.jpg" alt="Автор проекта" /></div>
+            <div className="author-info"><h3>Фролова Алёна Алексеевна</h3><br /><p>Студент группы 4326</p><p>Курсовая работа по дисциплине «Web-технологии»</p><p>Тема проекта: «Бультерьер: всё о собаке»</p><p>ГУАП</p></div>
+          </div>
+        </div>
+      </section>
     </>
   );
 }
 
+const pageComponents = {
+  home: HomePage,
+  about: AboutPage,
+  care: CarePage,
+  gallery: GalleryPage,
+  facts: FactsPage,
+  contacts: ContactsPage,
+};
+
 function App() {
   const [page, navigate] = useCurrentPage();
-  const CurrentPage = { home: HomePage, about: AboutPage, care: CarePage, gallery: GalleryPage, facts: FactsPage, contacts: ContactsPage }[page] || HomePage;
+  const Page = pageComponents[page] || HomePage;
 
   useScrollReveal(page);
 
@@ -432,7 +565,7 @@ function App() {
   return (
     <>
       <Header navigate={navigate} />
-      <main className="page-shell" key={page}><CurrentPage navigate={navigate} /></main>
+      <main className="page-shell" key={page}><Page navigate={navigate} /></main>
       <Footer />
       <TopButton />
     </>

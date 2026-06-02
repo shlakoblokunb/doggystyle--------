@@ -1,0 +1,245 @@
+<!DOCTYPE html>
+<html lang="ru">
+
+<head>
+
+    <!-- Кодировка -->
+    <meta charset="UTF-8">
+
+    <!-- Адаптивность -->
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <!-- SEO -->
+    <meta name="description"
+        content="Уход, питание, воспитание и содержание бультерьера.">
+
+    <title>Уход и содержание | Бультерьер</title>
+
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600;700;800&display=swap"
+        rel="stylesheet">
+
+    <!-- CSS -->
+    <link rel="stylesheet" href="css/style.css">
+
+</head>
+
+<body>
+
+    <!-- ==========================
+         ШАПКА
+    =========================== -->
+
+    <header class="header">
+
+        <div class="logo">
+            BullLover
+        </div>
+
+        <nav class="nav" id="nav">
+
+            <a href="index.html">Главная</a>
+
+            <a href="about.html">О породе</a>
+
+            <a href="care.html">Уход</a>
+
+            <a href="gallery.html">Галерея</a>
+
+            <a href="facts.html">Факты</a>
+
+            <a href="contacts.html">Контакты</a>
+
+        </nav>
+
+        <button class="burger" id="burger">
+            ☰
+        </button>
+
+    </header>
+
+    <!-- ==========================
+         БАННЕР
+    =========================== -->
+
+    <section class="page-hero">
+
+        <div class="container">
+
+            <h1>
+
+                Уход и содержание
+
+            </h1>
+
+            <p>
+
+                Основные рекомендации по воспитанию и ежедневному уходу за бультерьером
+
+            </p>
+
+        </div>
+
+    </section>
+
+    <!-- ==========================
+         ТАБЛИЦА ХАРАКТЕРИСТИК
+    =========================== -->
+
+    <section class="care-table-section">
+
+    <div class="container">
+
+        <div class="section-title">
+            <h2>Основные характеристики</h2>
+        </div>
+
+        <div class="care-table-card">
+
+            <div class="care-row">
+                <span>Страна происхождения</span>
+                <span>Англия</span>
+            </div>
+
+            <div class="care-row">
+                <span>Группа FCI</span>
+                <span>Терьеры</span>
+            </div>
+
+            <div class="care-row">
+                <span>Рост</span>
+                <span>30–45 см</span>
+            </div>
+
+            <div class="care-row">
+                <span>Вес</span>
+                <span>20–35 кг</span>
+            </div>
+
+            <div class="care-row">
+                <span>Продолжительность жизни</span>
+                <span>12–14 лет</span>
+            </div>
+
+            <div class="care-row">
+                <span>Шерсть</span>
+                <span>Короткая, гладкая</span>
+            </div>
+
+            <div class="care-row">
+                <span>Темперамент</span>
+                <span>Энергичный, преданный, смелый</span>
+            </div>
+
+            <div class="care-row">
+                <span>Назначение</span>
+                <span>Компаньон</span>
+            </div>
+
+        </div>
+
+    </div>
+
+</section>
+
+    <!-- ==========================
+         КАРТОЧКИ УХОДА
+    =========================== -->
+
+    <section>
+    <div class="container">
+
+        <div class="section-title">
+            <h2>Что важно помнить</h2>
+        </div>
+
+        <div class="care-cards">
+
+            <div class="care-card">
+                <h3>Движение</h3>
+                <p>Со бультерьером нужно гулять 2–3 раза в день примерно по 1 часу.
+                    Нельзя забывать про баланс между физическими и умственными нагрузками.
+                </p>
+            </div>
+
+            <div class="care-card">
+                <h3>Воспитание</h3>
+                <p> Главная задача — стать лидером для собаки, проявить последовательность, 
+                    твердость и уважение. Важно направить упрямство и охотничий 
+                    инстинкт буля в мирное русло.
+                </p>
+            </div>
+
+            <div class="care-card">
+                <h3>Гигиена</h3>
+                <p>Достаточно протирать лапы после прогулки, 
+                    мыть собаку 1–2 раза в год, чистить уши еженедельно, 
+                    стричь когти раз в месяц и проверять глаза. А ещё проверять, 
+                    чтобы буль не грустил!
+                </p>
+            </div>
+
+        </div>
+
+    </div>
+</section>
+
+    <!-- ==========================
+         КАЛЬКУЛЯТОР ВОЗРАСТА
+    =========================== -->
+
+    <section class="age-section">
+
+        <div class="age-calculator">
+
+    <h2>Калькулятор возраста</h2>
+
+    <div class="age-input-group">
+
+        <input
+            type="number"
+            id="dogAge"
+            placeholder="Возраст собаки">
+
+        <button class="btn" id="ageBtn">
+            Рассчитать
+        </button>
+
+    </div>
+
+    <div id="ageResult"></div>
+
+</div>
+    </section>
+
+    <footer>
+    <div class="footer-content">
+        <h3>BullLover</h3>
+        <p>Информационный сайт о породе бультерьер</p>
+        <p>© 2026</p>
+    </div>
+</footer>
+
+    <!-- Кнопка вверх -->
+
+    <button id="topBtn">
+
+        ↑
+
+    </button>
+
+    <!-- jQuery -->
+
+    <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+
+    <!-- JS -->
+
+    <script type="module" src="js/care.js"></script>
+
+</body>
+
+</html>

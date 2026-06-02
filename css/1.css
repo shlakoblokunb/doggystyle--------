@@ -21,6 +21,56 @@ body {
     line-height: 1.75;
 }
 
+@keyframes fadeUp {
+    from {
+        opacity: 0;
+        transform: translateY(28px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@keyframes softZoom {
+    from {
+        opacity: 0;
+        transform: scale(.96);
+    }
+
+    to {
+        opacity: 1;
+        transform: scale(1);
+    }
+}
+
+@keyframes floatPaw {
+    0%,
+    100% {
+        transform: translateY(0);
+    }
+
+    50% {
+        transform: translateY(-8px);
+    }
+}
+
+@keyframes pulsePink {
+    0%,
+    100% {
+        text-shadow: 0 0 0 rgba(255,79,157,0);
+    }
+
+    50% {
+        text-shadow: 0 0 24px rgba(255,79,157,.35);
+    }
+}
+
+.page-shell {
+    animation: fadeUp .45s ease both;
+}
+
 h1 {
     font-size: 3.2rem;
     line-height: 1.2;
@@ -99,6 +149,7 @@ section {
     font-size: 1.4rem;
     font-weight: 800;
     color: #ff4f9d;
+    animation: softZoom .55s ease both;
 }
 
 .nav {
@@ -107,13 +158,31 @@ section {
 }
 
 .nav a {
+    position: relative;
     color: #111;
     font-weight: 500;
     transition: .3s;
 }
 
+.nav a::after {
+    content: "";
+    position: absolute;
+    left: 0;
+    bottom: -8px;
+    width: 100%;
+    height: 2px;
+    background: #ff4f9d;
+    transform: scaleX(0);
+    transform-origin: left;
+    transition: .3s;
+}
+
 .nav a:hover {
     color: #ff4f9d;
+}
+
+.nav a:hover::after {
+    transform: scaleX(1);
 }
 
 .burger {
@@ -145,6 +214,11 @@ section {
 .filter-btn.active {
     transform: translateY(-4px);
     box-shadow: 0 15px 35px rgba(255,79,157,.35);
+}
+
+.btn:active,
+.filter-btn:active {
+    transform: translateY(-1px) scale(.98);
 }
 
 .cards {
@@ -206,7 +280,7 @@ section {
 .reveal {
     opacity: 0;
     transform: translateY(30px);
-    transition: .6s ease;
+    transition: opacity .6s ease, transform .6s ease;
 }
 
 .reveal.active {
@@ -242,6 +316,17 @@ footer p {
 
 #topBtn.top-btn-visible {
     display: block;
+    animation: softZoom .25s ease both;
+}
+
+.card.reveal:nth-child(2),
+.care-card.reveal:nth-child(2) {
+    transition-delay: .1s;
+}
+
+.card.reveal:nth-child(3),
+.care-card.reveal:nth-child(3) {
+    transition-delay: .2s;
 }
 
 /* ===================================
@@ -264,6 +349,22 @@ footer p {
 
 .hero-content {
     max-width: 850px;
+}
+
+.hero-content > * {
+    animation: fadeUp .75s ease both;
+}
+
+.hero-content > *:nth-child(2) {
+    animation-delay: .12s;
+}
+
+.hero-content > *:nth-child(3) {
+    animation-delay: .24s;
+}
+
+.hero-content > *:nth-child(5) {
+    animation-delay: .36s;
 }
 
 .hero-label {
@@ -296,6 +397,7 @@ footer p {
     margin-bottom: 20px;
     backdrop-filter: blur(6px);
     -webkit-backdrop-filter: blur(6px);
+    animation: floatPaw 3.4s ease-in-out infinite;
 }
 
 .stats {
@@ -309,6 +411,7 @@ footer p {
 .stat h3 {
     font-size: 3.5rem;
     color: #ff78b8;
+    animation: pulsePink 2.8s ease-in-out infinite;
 }
 
 .stat p {
@@ -336,6 +439,16 @@ footer p {
     padding: 160px 0 90px;
     text-align: center;
     background: linear-gradient(135deg,#fff7fb,#ffe6f2);
+    animation: softZoom .55s ease both;
+}
+
+.page-hero h1,
+.page-hero p {
+    animation: fadeUp .65s ease both;
+}
+
+.page-hero p {
+    animation-delay: .12s;
 }
 
 /* ===================================
@@ -525,6 +638,10 @@ footer p {
     z-index: 3;
 }
 
+.gallery-carousel.active .gallery-item.center {
+    animation: softZoom .35s ease both;
+}
+
 .gallery-item.left {
     transform: translateX(-220px) scale(0.9);
     opacity: 0.7;
@@ -596,6 +713,7 @@ footer p {
     border: 1px solid #ffd1e6;
     box-shadow: 0 15px 35px rgba(255,79,157,.15);
     transform: translateY(-3px);
+    animation: softZoom .3s ease both;
 }
 
 .facts-list h3 {
@@ -735,5 +853,17 @@ footer p {
 
     .gallery-item.right {
         transform: translateX(140px) scale(0.9);
+    }
+}
+
+
+@media (prefers-reduced-motion: reduce) {
+    *,
+    *::before,
+    *::after {
+        animation-duration: .01ms !important;
+        animation-iteration-count: 1 !important;
+        scroll-behavior: auto !important;
+        transition-duration: .01ms !important;
     }
 }

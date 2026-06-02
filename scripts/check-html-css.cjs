@@ -3,6 +3,14 @@ const required = ['index.html', 'about.html', 'care.html', 'gallery.html', 'fact
 for (const file of required) {
   if (!fs.existsSync(file)) throw new Error(`Missing required file: ${file}`);
 }
+
+for (const file of required.filter((name) => name.endsWith('.html'))) {
+  const html = fs.readFileSync(file, 'utf8');
+
+  if (!html.includes('<meta name="keywords" content="')) {
+    throw new Error(`Missing keywords meta tag: ${file}`);
+  }
+}
 const css = fs.readFileSync('css/1.css', 'utf8');
 let depth = 0;
 let selector = '';

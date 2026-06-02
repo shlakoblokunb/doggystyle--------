@@ -9,14 +9,77 @@ const pages = [
   { id: 'contacts', label: 'Контакты', href: 'contacts.html' },
 ];
 
-const titles = {
-  home: 'Бультерьер — всё о собаке',
-  about: 'О породе | Бультерьер',
-  care: 'Уход и содержание | Бультерьер',
-  gallery: 'Галерея | Бультерьер',
-  facts: 'Интересные факты | Бультерьер',
-  contacts: 'Контакты | Бультерьер',
+const metadata = {
+  home: {
+    title: 'Бультерьер — всё о собаке',
+    description: 'Бультерьер: всё о собаке. История породы, уход, воспитание, галерея и интересные факты.',
+    keywords: 'бультерьер, бультерьер собака, порода бультерьер, уход за бультерьером, характер бультерьера, воспитание бультерьера, BullLover',
+  },
+  about: {
+    title: 'О породе | Бультерьер',
+    description: 'История происхождения, особенности характера и стандарты породы бультерьер.',
+    keywords: 'история бультерьера, особенности бультерьера, порода бультерьер, характер бультерьера, Джеймс Хинкс',
+  },
+  care: {
+    title: 'Уход и содержание | Бультерьер',
+    description: 'Уход, питание, воспитание и содержание бультерьера.',
+    keywords: 'уход за бультерьером, содержание бультерьера, воспитание бультерьера, прогулки с бультерьером, здоровье бультерьера',
+  },
+  gallery: {
+    title: 'Галерея | Бультерьер',
+    description: 'Фотогалерея щенков, взрослых и играющих бультерьеров.',
+    keywords: 'галерея бультерьеров, фото бультерьера, щенки бультерьера, взрослый бультерьер, играющий бультерьер',
+  },
+  facts: {
+    title: 'Интересные факты | Бультерьер',
+    description: 'Интересные факты и небольшая викторина о породе бультерьер.',
+    keywords: 'интересные факты о бультерьерах, викторина бультерьер, факты бультерьер, особенности породы',
+  },
+  contacts: {
+    title: 'Контакты | Бультерьер',
+    description: 'Контактная информация и сведения об авторе проекта о породе бультерьер.',
+    keywords: 'контакты BullLover, автор проекта бультерьер, бультерьер контакты, Фролова Алёна',
+  },
 };
+
+
+function setMetaTag(name, content) {
+  let tag = document.querySelector(`meta[name="${name}"]`);
+
+  if (!tag) {
+    tag = document.createElement('meta');
+    tag.setAttribute('name', name);
+    document.head.appendChild(tag);
+  }
+
+  tag.setAttribute('content', content);
+}
+
+function useScrollReveal(page) {
+  useEffect(() => {
+    const elements = document.querySelectorAll('.reveal');
+
+    if (!elements.length) return undefined;
+
+    if (!('IntersectionObserver' in window)) {
+      elements.forEach((element) => element.classList.add('active'));
+      return undefined;
+    }
+
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach((entry) => {
+        if (entry.isIntersecting) {
+          entry.target.classList.add('active');
+          observer.unobserve(entry.target);
+        }
+      });
+    }, { threshold: 0.18 });
+
+    elements.forEach((element) => observer.observe(element));
+
+    return () => observer.disconnect();
+  }, [page]);
+}
 
 function pageFromPath(pathname) {
   const file = pathname.split('/').pop() || 'index.html';
@@ -173,9 +236,9 @@ function HomePage({ navigate }) {
         <div className="container">
           <SectionTitle title="Почему именно бультерьер?" />
           <div className="cards">
-            <article className="card"><div className="pink-square">❤</div><h3>Преданность</h3><p>Сильная привязанность к семье</p></article>
-            <article className="card"><div className="pink-square">⚡</div><h3>Активность</h3><p>Любит движение и игры</p></article>
-            <article className="card"><div className="pink-square">🧠</div><h3>Интеллект</h3><p>Быстро обучается</p></article>
+            <article className="card reveal"><div className="pink-square">❤</div><h3>Преданность</h3><p>Сильная привязанность к семье</p></article>
+            <article className="card reveal"><div className="pink-square">⚡</div><h3>Активность</h3><p>Любит движение и игры</p></article>
+            <article className="card reveal"><div className="pink-square">🧠</div><h3>Интеллект</h3><p>Быстро обучается</p></article>
           </div>
         </div>
       </section>
@@ -190,14 +253,14 @@ function HomePage({ navigate }) {
         ))}
       </section>
 
-      <section className="features">
+      <section className="features reveal">
         <div className="container">
           <div><h2>Собака с уникальным характером</h2><p>Бультерьер — добрый и энергичный компаньон</p></div>
           <div><img src="images/feature-dog.jpg" alt="Бультерьер" className="feature-img" /></div>
         </div>
       </section>
 
-      <section>
+      <section className="reveal">
         <div className="quiz-box">
           <h2 className="quiz-title">Подходит ли вам бультерьер?</h2>
           {!finished ? (
@@ -226,7 +289,7 @@ function AboutPage() {
       <section>
         <div className="container">
           <SectionTitle title="Происхождение породы" />
-          <div className="about-history reveal active">
+          <div className="about-history reveal">
             <div className="about-history-text">
               <p>Порода была выведена в Англии в XIX веке заводчиком Джеймсом Хинксом. Он скрестил староанглийского бульдога, белого английского терьера и далматина, чтобы получить идеального охотника на крыс и бойца. Впервые белоснежного бультерьера представили на выставке в 1862 году, после чего собака стала аристократическим символом.</p>
               <p>Современный бультерьер значительно отличается от своих предков. Сегодня это прежде всего собака-компаньон, ориентированная на общение с человеком и жизнь в семье.</p>
@@ -239,9 +302,9 @@ function AboutPage() {
         <div className="container">
           <SectionTitle title="Основные особенности" />
           <div className="cards">
-            <article className="card reveal active"><h3>Уникальная внешность</h3><p>Яйцевидная форма головы считается визитной карточкой породы</p></article>
-            <article className="card reveal active"><h3>Высокий интеллект</h3><p>Бультерьеры хорошо обучаются и быстро осваивают новые команды</p></article>
-            <article className="card reveal active"><h3>Активность</h3><p>Порода нуждается в регулярных прогулках и физических нагрузках</p></article>
+            <article className="card reveal"><h3>Уникальная внешность</h3><p>Яйцевидная форма головы считается визитной карточкой породы</p></article>
+            <article className="card reveal"><h3>Высокий интеллект</h3><p>Бультерьеры хорошо обучаются и быстро осваивают новые команды</p></article>
+            <article className="card reveal"><h3>Активность</h3><p>Порода нуждается в регулярных прогулках и физических нагрузках</p></article>
           </div>
         </div>
       </section>
@@ -249,9 +312,9 @@ function AboutPage() {
         <div className="container">
           <SectionTitle title="Развитие породы" />
           <div className="timeline">
-            <div className="timeline-item reveal active"><span>1850-е</span><h3>Начало селекции</h3><p>Первые эксперименты по созданию новой породы</p></div>
-            <div className="timeline-item reveal active"><span>1860-е</span><h3>Первые выставки</h3><p>Бультерьер получает узнаваемость и популярность</p></div>
-            <div className="timeline-item reveal active"><span>XX век</span><h3>Семейный компаньон</h3><p>Порода становится преданной собакой для активных владельцев</p></div>
+            <div className="timeline-item reveal"><span>1850-е</span><h3>Начало селекции</h3><p>Первые эксперименты по созданию новой породы</p></div>
+            <div className="timeline-item reveal"><span>1860-е</span><h3>Первые выставки</h3><p>Бультерьер получает узнаваемость и популярность</p></div>
+            <div className="timeline-item reveal"><span>XX век</span><h3>Семейный компаньон</h3><p>Порода становится преданной собакой для активных владельцев</p></div>
           </div>
         </div>
       </section>
@@ -273,13 +336,13 @@ function CarePage() {
   return (
     <>
       <PageHero title="Уход и содержание" text="Основные рекомендации по воспитанию и ежедневному уходу за бультерьером" />
-      <section className="care-table-section"><div className="container"><SectionTitle title="Основные характеристики" /><div className="care-table-card">{rows.map(([name, value]) => <div className="care-row" key={name}><span>{name}</span><span>{value}</span></div>)}</div></div></section>
+      <section className="care-table-section"><div className="container"><SectionTitle title="Основные характеристики" /><div className="care-table-card reveal">{rows.map(([name, value]) => <div className="care-row" key={name}><span>{name}</span><span>{value}</span></div>)}</div></div></section>
       <section><div className="container"><SectionTitle title="Что важно помнить" /><div className="care-cards">
-        <div className="care-card"><h3>Движение</h3><p>Со бультерьером нужно гулять 2–3 раза в день примерно по 1 часу. Нельзя забывать про баланс между физическими и умственными нагрузками.</p></div>
-        <div className="care-card"><h3>Воспитание</h3><p>Главная задача — стать лидером для собаки, проявить последовательность, твердость и уважение. Важно направить упрямство и охотничий инстинкт буля в мирное русло.</p></div>
-        <div className="care-card"><h3>Гигиена</h3><p>Достаточно протирать лапы после прогулки, мыть собаку 1–2 раза в год, чистить уши еженедельно, стричь когти раз в месяц и проверять глаза. А ещё проверять, чтобы буль не грустил!</p></div>
+        <div className="care-card reveal"><h3>Движение</h3><p>Со бультерьером нужно гулять 2–3 раза в день примерно по 1 часу. Нельзя забывать про баланс между физическими и умственными нагрузками.</p></div>
+        <div className="care-card reveal"><h3>Воспитание</h3><p>Главная задача — стать лидером для собаки, проявить последовательность, твердость и уважение. Важно направить упрямство и охотничий инстинкт буля в мирное русло.</p></div>
+        <div className="care-card reveal"><h3>Гигиена</h3><p>Достаточно протирать лапы после прогулки, мыть собаку 1–2 раза в год, чистить уши еженедельно, стричь когти раз в месяц и проверять глаза. А ещё проверять, чтобы буль не грустил!</p></div>
       </div></div></section>
-      <section className="age-section"><div className="age-calculator"><h2>Калькулятор возраста</h2><div className="age-input-group"><input type="number" value={age} onChange={(event) => setAge(event.target.value)} placeholder="Возраст собаки" /><button className="btn" onClick={calculateAge}>Рассчитать</button></div><div className="age-result">{result}</div></div></section>
+      <section className="age-section reveal"><div className="age-calculator"><h2>Калькулятор возраста</h2><div className="age-input-group"><input type="number" value={age} onChange={(event) => setAge(event.target.value)} placeholder="Возраст собаки" /><button className="btn" onClick={calculateAge}>Рассчитать</button></div><div className="age-result">{result}</div></div></section>
     </>
   );
 }
@@ -303,7 +366,7 @@ function GalleryPage() {
     <>
       <PageHero title="Галерея" text="Взгляните на эти смешные мордочки своими глазами" />
       <section><div className="container gallery-filters">{[['all', 'Все'], ['puppy', 'Щенки'], ['adult', 'Взрослые'], ['play', 'Играющие']].map(([value, label]) => <button className={`filter-btn${filter === value ? ' active' : ''}`} key={value} onClick={() => chooseFilter(value)}>{label}</button>)}</div></section>
-      <section><div className="container"><div className="gallery-carousel"><button className="gallery-arrow gallery-prev" aria-label="Предыдущее фото" onClick={() => setIndex(getPrev(index))}>❮</button><div className="gallery-circle">{items.map((item) => <div className={`gallery-item ${item.pos}`} key={`${item.pos}-${item.data.src}`}><img src={item.data.src} alt={item.data.alt} /></div>)}</div><button className="gallery-arrow gallery-next" aria-label="Следующее фото" onClick={() => setIndex(getNext(index))}>❯</button></div></div></section>
+      <section><div className="container"><div className="gallery-carousel reveal"><button className="gallery-arrow gallery-prev" aria-label="Предыдущее фото" onClick={() => setIndex(getPrev(index))}>❮</button><div className="gallery-circle">{items.map((item) => <div className={`gallery-item ${item.pos}`} key={`${item.pos}-${item.data.src}`}><img src={item.data.src} alt={item.data.alt} /></div>)}</div><button className="gallery-arrow gallery-next" aria-label="Следующее фото" onClick={() => setIndex(getNext(index))}>❯</button></div></div></section>
     </>
   );
 }
@@ -331,7 +394,7 @@ function FactsPage() {
   return (
     <>
       <PageHero title="Интересные факты" text="Необычные особенности одной из самых узнаваемых пород собак" />
-      <section><div className="container"><SectionTitle title="Случайный факт" /><div className="fact-generator"><button className="btn" onClick={showFact}>Показать факт</button><div className={factActive ? 'fact-text fact-card-active' : 'fact-text'}>{fact}</div></div></div></section>
+      <section><div className="container"><SectionTitle title="Случайный факт" /><div className="fact-generator reveal"><button className="btn" onClick={showFact}>Показать факт</button><div className={factActive ? 'fact-text fact-card-active' : 'fact-text'}>{fact}</div></div></div></section>
       <section><div className="container"><SectionTitle title="Интересные особенности породы" /><div className="facts-list">
         <h3>🐾 Узнаваемый профиль</h3><p>Яйцевидная форма головы делает породу одной из самых узнаваемых в мире</p>
         <h3>🐾 Высокий интеллект</h3><p>Бультерьеры быстро усваивают новые команды, несмоторя на своё упрямство</p>
@@ -347,8 +410,8 @@ function ContactsPage() {
   return (
     <>
       <PageHero title="Контакты" text="Позвоните, если захочется поболтать о бультерьерах" />
-      <section><div className="container"><SectionTitle title="Контактная информация" /><div className="contacts-grid"><div className="contact-card"><h3>Email</h3><p><a href="mailto:lesikpost@gmail.com">lesikpost@gmail.com</a></p></div><div className="contact-card"><h3>Телефон</h3><p>+7 (922) 259-90-52</p></div><div className="contact-card"><h3>Город</h3><p>Санкт-Петербург</p></div></div></div></section>
-      <section><div className="container"><SectionTitle title="Автор проекта" /><div className="author-card"><div className="author-photo"><img src="images/author.jpg" alt="Автор проекта" /></div><div className="author-info"><h3>Фролова Алёна Алексеевна</h3><br /><p>Студент группы 4326</p><p>Курсовая работа по дисциплине «Web-технологии»</p><p>Тема проекта: «Бультерьер: всё о собаке»</p><p>ГУАП</p></div></div></div></section>
+      <section><div className="container"><SectionTitle title="Контактная информация" /><div className="contacts-grid reveal"><div className="contact-card"><h3>Email</h3><p><a href="mailto:lesikpost@gmail.com">lesikpost@gmail.com</a></p></div><div className="contact-card"><h3>Телефон</h3><p>+7 (922) 259-90-52</p></div><div className="contact-card"><h3>Город</h3><p>Санкт-Петербург</p></div></div></div></section>
+      <section><div className="container"><SectionTitle title="Автор проекта" /><div className="author-card reveal"><div className="author-photo"><img src="images/author.jpg" alt="Автор проекта" /></div><div className="author-info"><h3>Фролова Алёна Алексеевна</h3><br /><p>Студент группы 4326</p><p>Курсовая работа по дисциплине «Web-технологии»</p><p>Тема проекта: «Бультерьер: всё о собаке»</p><p>ГУАП</p></div></div></div></section>
     </>
   );
 }
@@ -357,14 +420,19 @@ function App() {
   const [page, navigate] = useCurrentPage();
   const CurrentPage = { home: HomePage, about: AboutPage, care: CarePage, gallery: GalleryPage, facts: FactsPage, contacts: ContactsPage }[page] || HomePage;
 
+  useScrollReveal(page);
+
   useEffect(() => {
-    document.title = titles[page] || titles.home;
+    const pageMeta = metadata[page] || metadata.home;
+    document.title = pageMeta.title;
+    setMetaTag('description', pageMeta.description);
+    setMetaTag('keywords', pageMeta.keywords);
   }, [page]);
 
   return (
     <>
       <Header navigate={navigate} />
-      <main><CurrentPage navigate={navigate} /></main>
+      <main className="page-shell" key={page}><CurrentPage navigate={navigate} /></main>
       <Footer />
       <TopButton />
     </>
